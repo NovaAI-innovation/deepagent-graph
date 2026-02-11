@@ -1,0 +1,34 @@
+workers:
+  architect:
+    - topology_proposer
+    - state_schema_reviewer
+    - failure_mode_reviewer
+    - hybrid_boundary_analyst
+  eval:
+    - adversarial_case_generator
+    - rubric_writer
+    - failure_clustering_analyst
+    - regression_suite_runner
+  optimizer:
+    - ablation_designer
+    - results_analyst
+    - cost_performance_tradeoff_analyst
+  prompt_policy:
+    - prompt_variant_generator
+    - policy_test_writer
+    - edge_case_prober
+  tooling:
+    - schema_validator
+    - adapter_generator
+    - tool_reliability_tester
+  compiler:
+    - code_stub_generator
+    - validation_checker
+    - boundary_adapter_generator
+  ops:
+    - cost_estimator
+    - latency_modeler
+  data_curator:
+    - scenario_generator
+    - data_labeler
+    - coverage_analyst

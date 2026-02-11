@@ -1,0 +1,21 @@
+# Hybrid compiled spec stub
+runtime_target: hybrid
+version: 0
+graph_zone:
+  nodes: []
+  edges: []
+recursion_zone:
+  planner: {}
+  critic: {}
+  workers: []
+boundary_contracts: []
+shared_state_protocol:
+  shared_keys: []
+  merge_strategy: {}
+telemetry:
+  trace_propagation: true
+  shared_trace_id_key: trace_id
+config: {}
+code_stubs:
+  - path: hybrid_boundary_stub.py
+    markers: ["# STUB: implement"]

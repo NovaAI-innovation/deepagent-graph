@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PromptPack",
+  "type": "object",
+  "required": ["version", "system_prompts", "role_prompts", "tool_patterns", "guardrails", "few_shots"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "system_prompts": {"type": "object"},
+    "role_prompts": {"type": "object"},
+    "tool_patterns": {"type": "object"},
+    "guardrails": {"type": "array"},
+    "few_shots": {"type": "array"}
+  },
+  "additionalProperties": true
+}

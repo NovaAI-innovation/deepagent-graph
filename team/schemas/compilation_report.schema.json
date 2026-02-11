@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompilationReport",
+  "type": "object",
+  "required": ["version", "warnings", "assumptions", "errors"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "warnings": {"type": "array"},
+    "assumptions": {"type": "array"},
+    "errors": {"type": "array"}
+  },
+  "additionalProperties": true
+}

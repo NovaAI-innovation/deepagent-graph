@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EvalSpec",
+  "type": "object",
+  "required": ["version", "datasets", "metrics", "thresholds", "rubrics"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "datasets": {"type": "array"},
+    "metrics": {"type": "array"},
+    "thresholds": {"type": "object"},
+    "rubrics": {"type": "array"}
+  },
+  "additionalProperties": true
+}

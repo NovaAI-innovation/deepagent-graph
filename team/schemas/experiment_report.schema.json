@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExperimentReport",
+  "type": "object",
+  "required": ["version", "scores", "failure_clusters", "comparisons"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "scores": {"type": "object"},
+    "failure_clusters": {"type": "array"},
+    "comparisons": {"type": "array"}
+  },
+  "additionalProperties": true
+}

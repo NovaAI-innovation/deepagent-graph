@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TelemetrySpec",
+  "type": "object",
+  "required": ["version", "metrics", "sampling", "traces"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "metrics": {"type": "array"},
+    "sampling": {"type": "object"},
+    "traces": {"type": "object"}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,15 @@
+version: 0
+system_prompts:
+  orchestrator: ""
+  architect: ""
+  eval: ""
+  optimizer: ""
+  prompt_policy: ""
+  tooling: ""
+  compiler: ""
+  ops: ""
+  data_curator: ""
+role_prompts: {}
+tool_patterns: {}
+guardrails: []
+few_shots: []

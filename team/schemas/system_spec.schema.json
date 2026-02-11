@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SystemSpec",
+  "type": "object",
+  "required": ["version", "runtime_target", "topology_type", "core"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "runtime_target": {"type": "string", "enum": ["langgraph", "deepagent", "hybrid"]},
+    "topology_type": {"type": "string"},
+    "core": {"type": "object"},
+    "langgraph_ext": {"type": "object"},
+    "deepagent_ext": {"type": "object"},
+    "hybrid_ext": {"type": "object"}
+  },
+  "additionalProperties": true
+}

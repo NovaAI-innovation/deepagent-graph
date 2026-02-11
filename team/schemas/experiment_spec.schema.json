@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExperimentSpec",
+  "type": "object",
+  "required": ["version", "variants", "metrics", "controls"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "variants": {"type": "array"},
+    "metrics": {"type": "array"},
+    "controls": {"type": "array"}
+  },
+  "additionalProperties": true
+}

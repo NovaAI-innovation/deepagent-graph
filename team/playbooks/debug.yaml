@@ -1,0 +1,27 @@
+name: debug
+gather_constraints: true
+entry_preconditions:
+  - request
+gate_requirements:
+  - phase: eval_regression
+    gates: [quality_gate]
+  - phase: compile_if_needed
+    gates: [compilation_gate]
+phases:
+  - gather_constraints
+  - repro_swarm
+  - classify_failure
+  - patch
+  - eval_regression
+  - compile_if_needed
+  - finalize
+allowed_loops:
+  - from_phase: eval_regression
+    to_phase: classify_failure
+    max_iterations: 3
+    trigger_condition: regression_fail
+termination_conditions:
+  success: regression_pass
+  failure: budget_exhausted_and_unusable
+  on_budget_exhaustion: gate_human_or_partial
+human_gate_placement: optional

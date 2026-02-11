@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Skill",
+  "type": "object",
+  "required": ["name", "hooks"],
+  "properties": {
+    "name": {"type": "string"},
+    "enabled": {"type": "boolean"},
+    "roles": {"type": "array", "items": {"type": "string"}},
+    "hooks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["event", "actions"],
+        "properties": {
+          "event": {"type": "string", "enum": ["pre_run", "pre_phase", "post_phase"]},
+          "roles": {"type": "array", "items": {"type": "string"}},
+          "playbooks": {"type": "array", "items": {"type": "string"}},
+          "phases": {"type": "array", "items": {"type": "string"}},
+          "runtime_targets": {
+            "type": "array",
+            "items": {"type": "string", "enum": ["langgraph", "deepagent", "hybrid"]}
+          },
+          "actions": {
+            "type": "object",
+            "properties": {
+              "request_patch": {"type": "object"},
+              "user_constraints_patch": {"type": "object"},
+              "budget_patch": {"type": "object"},
+              "routing_note": {"type": "string"}
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

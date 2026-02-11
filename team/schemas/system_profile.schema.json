@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SystemProfile",
+  "type": "object",
+  "required": ["version", "domain", "framework", "defaults", "skills"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "domain": {"type": "string"},
+    "framework": {"type": "string"},
+    "defaults": {
+      "type": "object",
+      "required": ["runtime_target", "playbook"],
+      "properties": {
+        "runtime_target": {"type": "string", "enum": ["langgraph", "deepagent", "hybrid"]},
+        "playbook": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "skills": {
+      "type": "object",
+      "required": ["directory", "enforce_exclusive", "require_declared_roles", "role_mode"],
+      "properties": {
+        "directory": {"type": "string"},
+        "enforce_exclusive": {"type": "boolean"},
+        "require_declared_roles": {"type": "boolean"},
+        "role_mode": {
+          "type": "object",
+          "additionalProperties": {"type": "string", "enum": ["hook", "markdown", "none"]}
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

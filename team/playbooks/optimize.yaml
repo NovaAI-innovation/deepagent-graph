@@ -1,0 +1,37 @@
+name: optimize
+gather_constraints: false
+entry_preconditions:
+  - SystemSpec
+  - EvalSpec
+gate_requirements:
+  - phase: eval_experiments
+    gates: [quality_gate]
+  - phase: ops_check
+    gates: [production_gate]
+  - phase: compile_if_needed
+    gates: [compilation_gate]
+  - phase: human_gate_optional
+    gates: [human_gate_optional]
+phases:
+  - eval_baseline
+  - optimizer
+  - eval_experiments
+  - apply_promotion
+  - ops_check
+  - compile_if_needed
+  - human_gate_optional
+  - finalize
+allowed_loops:
+  - from_phase: eval_experiments
+    to_phase: classify_failure
+    max_iterations: 3
+    trigger_condition: experiment_fail
+  - from_phase: apply_promotion
+    to_phase: gate_rerun
+    max_iterations: 3
+    trigger_condition: promotion_pending
+termination_conditions:
+  success: gates_pass
+  failure: budget_exhausted_and_unusable
+  on_budget_exhaustion: gate_human_or_partial
+human_gate_placement: optional

@@ -1,0 +1,11 @@
+name: langgraph_defaults
+enabled: true
+roles: [orchestrator]
+hooks:
+  - event: pre_run
+    runtime_targets: [langgraph]
+    actions:
+      user_constraints_patch:
+        runtime_profile: langgraph
+        preferred_topology: DAG
+      routing_note: Applied LangGraph runtime defaults.

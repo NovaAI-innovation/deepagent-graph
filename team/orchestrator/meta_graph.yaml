@@ -1,0 +1,30 @@
+name: meta_orchestrator_graph
+nodes:
+  - intake
+  - classify_intent
+  - determine_runtime_target
+  - gather_constraints
+  - select_playbook
+  - allocate_budgets
+  - run_phase
+  - classify_failure
+  - gate_quality
+  - gate_production
+  - gate_human
+  - decide_next_phase
+  - apply_promotion
+  - compile_system
+  - finalize
+edges:
+  - from: intake
+    to: classify_intent
+  - from: classify_intent
+    to: determine_runtime_target
+  - from: determine_runtime_target
+    to: gather_constraints
+  - from: gather_constraints
+    to: select_playbook
+  - from: select_playbook
+    to: allocate_budgets
+  - from: allocate_budgets
+    to: run_phase

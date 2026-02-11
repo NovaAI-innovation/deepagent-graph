@@ -1,0 +1,22 @@
+version: 1
+
+domain: generic
+framework: runtime_agnostic_multi_agent
+
+defaults:
+  runtime_target: langgraph
+  playbook: build
+
+skills:
+  directory: team/skills
+  enforce_exclusive: true
+  require_declared_roles: true
+  role_mode:
+    orchestrator: hook
+    architect: markdown
+    prompt_policy: markdown
+    tooling: markdown
+    eval: markdown
+    optimizer: markdown
+    ops: markdown
+    compiler: markdown

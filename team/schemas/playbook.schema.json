@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Playbook",
+  "type": "object",
+  "required": [
+    "name",
+    "phases",
+    "entry_preconditions",
+    "gate_requirements",
+    "allowed_loops",
+    "termination_conditions",
+    "human_gate_placement",
+    "gather_constraints"
+  ],
+  "properties": {
+    "name": {"type": "string"},
+    "phases": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "entry_preconditions": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "gate_requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["phase", "gates"],
+        "properties": {
+          "phase": {"type": "string"},
+          "gates": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "allowed_loops": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from_phase", "to_phase", "max_iterations", "trigger_condition"],
+        "properties": {
+          "from_phase": {"type": "string"},
+          "to_phase": {"type": "string"},
+          "max_iterations": {"type": "integer", "minimum": 0},
+          "trigger_condition": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "termination_conditions": {
+      "type": "object",
+      "required": ["success", "failure", "on_budget_exhaustion"],
+      "properties": {
+        "success": {"type": "string"},
+        "failure": {"type": "string"},
+        "on_budget_exhaustion": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "human_gate_placement": {"type": "string"},
+    "gather_constraints": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

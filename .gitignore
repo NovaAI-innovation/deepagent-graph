@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Local config and secrets
+.env
+.env.*
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+
+# Generated runtime state
+team/state_broker/artifacts/
+team/state_broker/summaries/
+team/state_broker/meta_eval_log.jsonl

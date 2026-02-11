@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CompiledSpec",
+  "type": "object",
+  "required": ["version", "runtime_target", "config"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "runtime_target": {"type": "string", "enum": ["langgraph", "deepagent", "hybrid"]},
+    "config": {"type": "object"},
+    "code_stubs": {"type": "array"}
+  },
+  "additionalProperties": true
+}

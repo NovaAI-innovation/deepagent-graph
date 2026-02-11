@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ConstraintPack",
+  "type": "object",
+  "required": ["version", "eval_constraints", "tool_constraints", "ops_constraints", "user_constraints"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "eval_constraints": {"type": "object"},
+    "tool_constraints": {"type": "object"},
+    "ops_constraints": {"type": "object"},
+    "user_constraints": {"type": "object"}
+  },
+  "additionalProperties": true
+}

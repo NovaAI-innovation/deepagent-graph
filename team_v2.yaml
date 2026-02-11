@@ -1,0 +1,318 @@
+team:
+  name: deepagent-graph-v2
+  runtime_targets:
+    - langgraph
+    - deepagent
+    - hybrid
+  principles:
+    structured_outputs_only: true
+    ownership_exclusive: true
+    promotion_protocol_required: true
+    communication_model: artifact_only
+
+artifacts:
+  SystemSpec:
+    owner: architect
+    description: Source-of-truth architecture with runtime extensions.
+  PromptPack:
+    owner: prompt_policy
+    description: Prompts, policies, guardrails, tool-call patterns.
+  ToolContract:
+    owner: tooling
+    description: Tool schemas, retry and caching rules, reliability policy.
+  EvalSpec:
+    owner: eval
+    description: Datasets, metrics, thresholds, rubrics.
+  ExperimentSpec:
+    owner: optimizer
+    description: Experiment plan defining variations and measurements.
+  ExperimentReport:
+    owner: eval
+    description: Scores, failure clusters, comparisons.
+  TelemetrySpec:
+    owner: ops
+    description: What to log and how to measure cost and latency.
+  SLOReport:
+    owner: ops
+    description: Production gate results.
+  PromotionDecision:
+    owner: optimizer
+    description: Proposed cross-artifact changes with evidence.
+  ConstraintPack:
+    owner: orchestrator
+    description: Pre-phase constraint signals collected at intake.
+  CompiledSpec:
+    owner: compiler
+    description: Runtime-specific spec derived from SystemSpec.
+  CompilationReport:
+    owner: compiler
+    description: Warnings, assumptions, and ambiguities from compilation.
+  MetaEvalLog:
+    owner: orchestrator
+    description: Append-only meta-system performance log.
+
+roles:
+  orchestrator:
+    depth: deep_bounded
+    subgraph: MetaOrchestratorGraph
+    owns:
+      - ConstraintPack
+      - MetaEvalLog
+    reads:
+      - PromotionDecision
+    produces:
+      - routing_trace
+      - history
+      - status
+      - budgets
+    responsibilities:
+      - gather_constraints before the first phase
+      - select playbook and allocate budgets
+      - enforce gates, routing, and termination
+      - execute Promotion Protocol routing (apply_promotion)
+      - log meta-evaluation metrics
+    must_not:
+      - write SystemSpec or PromptPack or ToolContract or EvalSpec or CompiledSpec
+      - classify failures using unstructured reasoning
+      - override gate decisions (can escalate to human gate)
+      - apply PromotionDecisions directly
+
+  architect:
+    depth: fully_deep
+    subgraph: ArchitectSubgraph
+    owns:
+      - SystemSpec
+    reads:
+      - ConstraintPack
+      - EvalSpec
+      - ToolContract
+      - PromotionDecision
+    produces:
+      - SystemSpec
+    responsibilities:
+      - define topology, state, routing, and failure handling
+      - enforce state schema discipline and reducers
+      - define hybrid boundaries and contracts when needed
+    workers:
+      - topology_proposer
+      - state_schema_reviewer
+      - failure_mode_reviewer
+      - hybrid_boundary_analyst
+
+  eval:
+    depth: fully_deep
+    subgraph: EvalSubgraph
+    owns:
+      - EvalSpec
+      - ExperimentReport
+    reads:
+      - SystemSpec
+      - PromptPack
+      - ToolContract
+      - ConstraintPack
+      - CompiledSpec
+    produces:
+      - EvalSpec
+      - ExperimentReport
+      - quality_gate_output
+    responsibilities:
+      - define metrics, thresholds, rubrics, datasets
+      - run smoke and regression evaluations
+      - cluster failures for routing
+    workers:
+      - adversarial_case_generator
+      - rubric_writer
+      - failure_clustering_analyst
+      - regression_suite_runner
+
+  optimizer:
+    depth: fully_deep
+    subgraph: OptimizerSubgraph
+    owns:
+      - ExperimentSpec
+      - PromotionDecision
+    reads:
+      - SystemSpec
+      - PromptPack
+      - ToolContract
+      - EvalSpec
+      - ExperimentReport
+      - TelemetrySpec
+      - SLOReport
+      - CompiledSpec
+    produces:
+      - ExperimentSpec
+      - PromotionDecision
+    responsibilities:
+      - define experiments and measure tradeoffs
+      - propose changes with evidence
+      - never mutate artifacts it does not own
+    workers:
+      - ablation_designer
+      - results_analyst
+      - cost_performance_tradeoff_analyst
+
+  prompt_policy:
+    depth: semi_deep_to_deep
+    subgraph: PromptPolicySubgraph
+    owns:
+      - PromptPack
+    reads:
+      - SystemSpec
+      - ToolContract
+      - ConstraintPack
+      - ExperimentReport
+      - PromotionDecision
+    produces:
+      - PromptPack
+    responsibilities:
+      - define prompts and tool-call patterns
+      - align prompts with state reads and writes
+      - enforce safety and behavioral guardrails
+    workers:
+      - prompt_variant_generator
+      - policy_test_writer
+      - edge_case_prober
+
+  tooling:
+    depth: semi_deep
+    subgraph: ToolingSubgraph
+    owns:
+      - ToolContract
+    reads:
+      - SystemSpec
+      - ConstraintPack
+      - PromotionDecision
+    produces:
+      - ToolContract
+    responsibilities:
+      - define tool schemas and retries
+      - set caching and idempotency policies
+      - provide mock adapters when applicable
+    workers:
+      - schema_validator
+      - adapter_generator
+      - tool_reliability_tester
+
+  compiler:
+    depth: semi_deep
+    subgraph: CompilerSubgraph
+    owns:
+      - CompiledSpec
+      - CompilationReport
+    reads:
+      - SystemSpec
+      - PromptPack
+      - ToolContract
+    produces:
+      - CompiledSpec
+      - CompilationReport
+    responsibilities:
+      - compile SystemSpec into runtime-specific specs
+      - validate handoffs, loops, tool coverage, and schemas
+      - report warnings and assumptions
+    workers:
+      - code_stub_generator
+      - validation_checker
+      - boundary_adapter_generator
+
+  ops:
+    depth: thin
+    subgraph: OpsSubgraph
+    owns:
+      - TelemetrySpec
+      - SLOReport
+    reads:
+      - SystemSpec
+      - ToolContract
+      - CompiledSpec
+    produces:
+      - TelemetrySpec
+      - SLOReport
+      - production_gate_output
+    responsibilities:
+      - validate cost, latency, and reliability budgets
+      - define telemetry and SLOs
+      - keep analysis deterministic
+    workers:
+      - cost_estimator
+      - latency_modeler
+
+  data_curator:
+    depth: semi_deep_optional
+    subgraph: DataCuratorSubgraph
+    owns:
+      - datasets
+    reads:
+      - EvalSpec
+      - SystemSpec
+      - ExperimentReport
+    produces:
+      - datasets
+    responsibilities:
+      - build gold, edge, and adversarial datasets
+      - identify coverage gaps from failures
+    workers:
+      - scenario_generator
+      - data_labeler
+      - coverage_analyst
+
+budgets:
+  profile: standard_build
+  global:
+    max_steps: 100
+    max_tokens: 500000
+    max_tool_calls: 200
+    max_spawns: 30
+  per_role:
+    architect:
+      max_steps: 15
+      max_tokens: 80000
+      max_tool_calls: 30
+      max_spawns: 5
+    prompt_policy:
+      max_steps: 10
+      max_tokens: 60000
+      max_tool_calls: 20
+      max_spawns: 4
+    tooling:
+      max_steps: 10
+      max_tokens: 40000
+      max_tool_calls: 30
+      max_spawns: 3
+    eval:
+      max_steps: 20
+      max_tokens: 100000
+      max_tool_calls: 50
+      max_spawns: 5
+    optimizer:
+      max_steps: 15
+      max_tokens: 80000
+      max_tool_calls: 30
+      max_spawns: 5
+    ops:
+      max_steps: 8
+      max_tokens: 30000
+      max_tool_calls: 15
+      max_spawns: 2
+    compiler:
+      max_steps: 10
+      max_tokens: 60000
+      max_tool_calls: 15
+      max_spawns: 3
+    orchestrator:
+      max_steps: 12
+      max_tokens: 50000
+      max_tool_calls: 10
+      max_spawns: 0
+
+gates:
+  quality_gate:
+    owner: eval
+    output: quality_gate_output
+  production_gate:
+    owner: ops
+    output: production_gate_output
+  human_gate:
+    owner: human
+    optional: true

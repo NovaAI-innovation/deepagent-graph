@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ToolContract",
+  "type": "object",
+  "required": ["version", "tools", "retries", "caching", "idempotency", "rate_limits"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 0},
+    "tools": {"type": "array"},
+    "retries": {"type": "object"},
+    "caching": {"type": "object"},
+    "idempotency": {"type": "object"},
+    "rate_limits": {"type": "object"}
+  },
+  "additionalProperties": true
+}

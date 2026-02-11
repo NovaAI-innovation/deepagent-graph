@@ -1,0 +1,18 @@
+name: evaluate_only
+gather_constraints: false
+entry_preconditions:
+  - SystemSpec
+  - PromptPack
+  - ToolContract
+gate_requirements:
+  - phase: eval_full
+    gates: [quality_gate]
+phases:
+  - eval_full
+  - finalize
+allowed_loops: []
+termination_conditions:
+  success: quality_gate_pass
+  failure: quality_gate_fail
+  on_budget_exhaustion: partial
+human_gate_placement: skip

@@ -1,0 +1,45 @@
+name: build
+gather_constraints: true
+entry_preconditions:
+  - request
+gate_requirements:
+  - phase: eval_smoke
+    gates: [quality_gate]
+  - phase: ops_instrument
+    gates: [production_gate]
+  - phase: compile
+    gates: [compilation_gate]
+  - phase: human_gate_optional
+    gates: [human_gate_optional]
+phases:
+  - gather_constraints
+  - architect
+  - prompt_policy
+  - tooling
+  - eval_smoke
+  - ops_instrument
+  - compile
+  - human_gate_optional
+  - finalize
+allowed_loops:
+  - from_phase: eval_smoke
+    to_phase: classify_failure
+    max_iterations: 3
+    trigger_condition: quality_gate_fail
+  - from_phase: ops_instrument
+    to_phase: classify_failure
+    max_iterations: 3
+    trigger_condition: production_gate_fail
+  - from_phase: compile
+    to_phase: classify_failure
+    max_iterations: 3
+    trigger_condition: compilation_fail
+  - from_phase: apply_promotion
+    to_phase: gate_rerun
+    max_iterations: 3
+    trigger_condition: promotion_pending
+termination_conditions:
+  success: all_required_gates_pass
+  failure: budget_exhausted_and_unusable
+  on_budget_exhaustion: gate_human_or_partial
+human_gate_placement: optional

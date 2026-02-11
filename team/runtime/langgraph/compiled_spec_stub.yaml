@@ -1,0 +1,16 @@
+# LangGraph compiled spec stub
+runtime_target: langgraph
+version: 0
+nodes: []
+edges: []
+conditional_edges: []
+state_schema:
+  keys: []
+  reducers: []
+checkpointer:
+  enabled: false
+  config: {}
+tool_nodes: []
+code_stubs:
+  - path: langgraph_stub.py
+    markers: ["# STUB: implement"]

@@ -1,0 +1,22 @@
+name: optimize_safeguards
+enabled: true
+roles: [orchestrator]
+hooks:
+  - event: pre_run
+    playbooks: [optimize]
+    actions:
+      budget_patch:
+        per_role:
+          optimizer:
+            max_steps: 18
+      user_constraints_patch:
+        optimization_mode: conservative
+      routing_note: Applied optimize safeguards and budget bump.
+  - event: post_phase
+    playbooks: [optimize]
+    phases: [apply_promotion]
+    actions:
+      request_patch:
+        promotion_audit:
+          required: true
+      routing_note: Marked promotion audit requirement.

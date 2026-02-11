@@ -1,0 +1,31 @@
+name: hardening
+gather_constraints: false
+entry_preconditions:
+  - SystemSpec
+  - PromptPack
+  - ToolContract
+gate_requirements:
+  - phase: eval_adversarial
+    gates: [quality_gate]
+  - phase: ops_check
+    gates: [production_gate]
+  - phase: compile_if_needed
+    gates: [compilation_gate]
+  - phase: human_gate_optional
+    gates: [human_gate_optional]
+phases:
+  - eval_adversarial
+  - ops_check
+  - compile_if_needed
+  - human_gate_optional
+  - finalize
+allowed_loops:
+  - from_phase: eval_adversarial
+    to_phase: classify_failure
+    max_iterations: 3
+    trigger_condition: quality_gate_fail
+termination_conditions:
+  success: gates_pass
+  failure: budget_exhausted_and_unusable
+  on_budget_exhaustion: gate_human_or_partial
+human_gate_placement: optional

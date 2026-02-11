@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PromotionDecision",
+  "type": "object",
+  "required": ["id", "proposer", "target_artifact", "proposed_changes", "justification", "confidence", "urgency"],
+  "properties": {
+    "id": {"type": "string"},
+    "proposer": {"type": "string"},
+    "target_artifact": {"type": "string"},
+    "proposed_changes": {"type": "array"},
+    "justification": {"type": "array"},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "urgency": {"type": "string", "enum": ["low", "medium", "high"]}
+  },
+  "additionalProperties": true
+}

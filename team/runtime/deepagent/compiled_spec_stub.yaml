@@ -1,0 +1,17 @@
+# DeepAgent compiled spec stub
+runtime_target: deepagent
+version: 0
+planner:
+  prompt_ref: ""
+  replanning_triggers: []
+critic:
+  prompt_ref: ""
+  max_iterations: 0
+workers: []
+spawn_policy:
+  max_depth: 0
+  max_breadth: 0
+  termination_heuristics: []
+escalation_rules: []
+termination_conditions: []
+config: {}
