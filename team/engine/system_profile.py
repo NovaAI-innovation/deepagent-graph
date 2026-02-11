@@ -16,6 +16,14 @@ def _default_profile() -> Dict[str, Any]:
         "domain": "generic",
         "framework": "runtime_agnostic_multi_agent",
         "defaults": {"runtime_target": "langgraph", "playbook": "build"},
+        "memory": {
+            "enabled": False,
+            "backend": "noop",
+            "top_k": 3,
+            "min_score_to_record": 0.7,
+            "user_id": "default-user",
+            "agent_id": "deepagent-graph",
+        },
         "skills": {
             "directory": "team/skills",
             "enforce_exclusive": True,
@@ -26,7 +34,11 @@ def _default_profile() -> Dict[str, Any]:
 
 
 def load_system_profile(repo_root: str) -> Dict[str, Any]:
-    path = os.path.join(repo_root, "team", "config", "system_profile.yaml")
+    override = os.getenv("SYSTEM_PROFILE_PATH", "").strip()
+    if override:
+        path = override if os.path.isabs(override) else os.path.join(repo_root, override)
+    else:
+        path = os.path.join(repo_root, "team", "config", "system_profile.yaml")
     if not os.path.isfile(path):
         return _default_profile()
     with open(path, "r", encoding="utf-8") as handle:

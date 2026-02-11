@@ -16,6 +16,19 @@
       },
       "additionalProperties": true
     },
+    "memory": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "backend": {"type": "string", "enum": ["noop", "inmemory", "mem0"]},
+        "top_k": {"type": "integer", "minimum": 1, "maximum": 20},
+        "min_score_to_record": {"type": "number", "minimum": 0, "maximum": 1},
+        "user_id": {"type": "string"},
+        "agent_id": {"type": "string"},
+        "mem0": {"type": "object"}
+      },
+      "additionalProperties": true
+    },
     "skills": {
       "type": "object",
       "required": ["directory", "enforce_exclusive", "require_declared_roles", "role_mode"],

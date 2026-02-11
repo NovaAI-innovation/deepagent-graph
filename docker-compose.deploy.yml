@@ -1,0 +1,40 @@
+services:
+  app:
+    image: ${DEEPAGENT_IMAGE:-deepagent-graph:latest}
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      REPO_ROOT: /app
+      SYSTEM_PROFILE_PATH: /app/team/config/system_profile.docker.yaml
+    depends_on:
+      - redis
+      - qdrant
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: unless-stopped
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-deepagent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-deepagent}
+      POSTGRES_DB: ${POSTGRES_DB:-deepagent}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+  qdrant_data:
+  postgres_data:

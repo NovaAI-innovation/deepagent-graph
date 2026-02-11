@@ -21,3 +21,8 @@ This folder contains the multi-agent team scaffold for langgraph, deepagent, and
 - Fill runtime compiled spec stubs during compilation.
 - Use schemas/ for lightweight validation in your tooling pipeline.
 - Install `pyyaml` to load and validate playbooks in the orchestrator and scripts.
+
+## API + Docker
+- API entrypoint: `team/api/server.py` (`POST /run`, `GET /health`)
+- Local full stack: `docker compose up --build -d`
+- Deploy stack: see `DEPLOYMENT.md`

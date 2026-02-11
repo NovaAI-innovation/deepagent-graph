@@ -8,17 +8,17 @@ defaults:
   playbook: build
 
 memory:
-  enabled: false
-  backend: noop
+  enabled: true
+  backend: mem0
   top_k: 3
   min_score_to_record: 0.7
-  user_id: default-user
+  user_id: docker-user
   agent_id: deepagent-graph
   mem0:
     vector_store:
       provider: qdrant
       config:
-        host: localhost
+        host: qdrant
         port: 6333
 
 skills:

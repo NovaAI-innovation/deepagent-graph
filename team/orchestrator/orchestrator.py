@@ -16,6 +16,7 @@ from team.engine.classify_failure import classify_failure  # noqa: E402
 from team.engine.config import STANDARD_BUILD_BUDGETS  # noqa: E402
 from team.engine.gather_constraints import gather_constraints  # noqa: E402
 from team.engine.gates import human_gate, production_gate, quality_gate  # noqa: E402
+from team.engine.memory import build_memory_adapter  # noqa: E402
 from team.engine.md_skills import load_markdown_skills, resolve_markdown_skill_context  # noqa: E402
 from team.engine.skills import apply_skill_hooks, load_skills  # noqa: E402
 from team.engine.schema_validation import load_schema, validate_required  # noqa: E402
@@ -66,6 +67,8 @@ class Orchestrator:
         self.broker = StateBroker(storage_dir)
         self.skills = load_skills(self.skills_dir)
         self.md_skills = load_markdown_skills(self.skills_dir)
+        self.memory = build_memory_adapter(self.profile)
+        self.memory_cfg = self.profile.get("memory", {}) if isinstance(self.profile.get("memory"), dict) else {}
 
     def load_playbook(self, name: str) -> Dict[str, Any]:
         path = os.path.join(self.playbook_dir, f"{name}.yaml")
@@ -170,6 +173,64 @@ class Orchestrator:
             self.state.budget_exhausted = True
             self.state.status = "blocked"
 
+    def _fetch_adaptive_memory(
+        self, *, role: str, phase: str, playbook: str, runtime_target: str, request: Dict[str, Any]
+    ) -> List[str]:
+        if not bool(self.memory_cfg.get("enabled", False)):
+            return []
+        top_k = int(self.memory_cfg.get("top_k", 3))
+        user_constraints = request.get("user_constraints", {})
+        query = ""
+        if isinstance(user_constraints, dict):
+            query = json.dumps(user_constraints, sort_keys=True)
+        else:
+            query = str(request.get("user_constraints", ""))
+        return self.memory.fetch(
+            role=role,
+            phase=phase,
+            playbook=playbook,
+            runtime_target=runtime_target,
+            query=query,
+            top_k=top_k,
+        )
+
+    def _record_adaptive_memory(
+        self,
+        *,
+        role: str,
+        phase: str,
+        playbook: str,
+        runtime_target: str,
+        result: Dict[str, Any],
+    ) -> None:
+        if not bool(self.memory_cfg.get("enabled", False)):
+            return
+        gate_outputs = result.get("gate_outputs", {})
+        passed = True
+        score = 1.0
+        gate_names = []
+        if isinstance(gate_outputs, dict):
+            for gate_name, gate_output in gate_outputs.items():
+                gate_names.append(gate_name)
+                if isinstance(gate_output, dict):
+                    passed = passed and bool(gate_output.get("pass", True))
+                    if "score" in gate_output:
+                        try:
+                            score = min(score, float(gate_output.get("score", 1.0)))
+                        except Exception:
+                            pass
+        min_score = float(self.memory_cfg.get("min_score_to_record", 0.7))
+        if score < min_score:
+            return
+        summary = f"phase={phase} gates={','.join(gate_names) if gate_names else 'none'} pass={passed} score={score:.2f}"
+        self.memory.record(
+            role=role,
+            phase=phase,
+            playbook=playbook,
+            runtime_target=runtime_target,
+            outcome={"summary": summary, "pass": passed, "score": score},
+        )
+
     def _dispatch(self, phase: str, request: Dict[str, Any]) -> Dict[str, Any]:
         if self.state.budget_exhausted:
             self._record(phase, "budget", "exhausted")
@@ -186,15 +247,21 @@ class Orchestrator:
                 playbook=playbook,
                 runtime_target=runtime_target,
             )
+        adaptive_memories = self._fetch_adaptive_memory(
+            role=role, phase=phase, playbook=playbook, runtime_target=runtime_target, request=request
+        )
         phase_request = dict(request)
         phase_request["skill_context"] = {
             "role": role,
             "phase": phase,
             "names": md_context["names"],
             "instructions": md_context["instructions"],
+            "adaptive_memories": adaptive_memories,
         }
         if md_context["names"]:
             self._record(phase, "skill_context", ",".join(md_context["names"]))
+        if adaptive_memories:
+            self._record(phase, "memory_context", str(len(adaptive_memories)))
         self._consume_budget(role)
         if self.state.budget_exhausted:
             self._record(phase, "budget", "exhausted")
@@ -294,6 +361,13 @@ class Orchestrator:
             role = self._phase_role(phase)
             self._apply_skills("pre_phase", playbook_name, request, phase=phase, role=role)
             result = self._dispatch(phase, request)
+            self._record_adaptive_memory(
+                role=role,
+                phase=phase,
+                playbook=playbook_name,
+                runtime_target=str(request.get("runtime_target", "langgraph")),
+                result=result,
+            )
             self._apply_skills("post_phase", playbook_name, request, phase=phase, role=role)
             gate_outputs = result.get("gate_outputs", {})
             requirements = [req for req in gate_requirements if req.get("phase") == phase]

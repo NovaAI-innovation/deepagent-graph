@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deepagent-graph-app
+    ports:
+      - "8000:8000"
+    environment:
+      REPO_ROOT: /app
+      SYSTEM_PROFILE_PATH: /app/team/config/system_profile.docker.yaml
+    volumes:
+      - ./team/state_broker:/app/team/state_broker
+    depends_on:
+      - redis
+      - qdrant
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    container_name: deepagent-graph-redis
+    ports:
+      - "6379:6379"
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: deepagent-graph-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: deepagent-graph-postgres
+    environment:
+      POSTGRES_USER: deepagent
+      POSTGRES_PASSWORD: deepagent
+      POSTGRES_DB: deepagent
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  qdrant_data:
+  postgres_data:

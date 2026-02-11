@@ -1,0 +1,3 @@
+# Optional adaptive memory dependencies
+mem0ai
+qdrant-client

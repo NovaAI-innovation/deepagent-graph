@@ -16,7 +16,10 @@ def _skill_info(state: Dict[str, Any]) -> Dict[str, Any]:
         names = []
     if not isinstance(instructions, str):
         instructions = ""
-    return {"names": names, "instructions": instructions}
+    adaptive_memories = info.get("adaptive_memories", [])
+    if not isinstance(adaptive_memories, list):
+        adaptive_memories = []
+    return {"names": names, "instructions": instructions, "adaptive_memories": adaptive_memories}
 
 
 def _with_skill_metadata(payload: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
@@ -25,6 +28,8 @@ def _with_skill_metadata(payload: Dict[str, Any], state: Dict[str, Any]) -> Dict
         payload["skill_names"] = skill["names"]
     if skill["instructions"]:
         payload["skill_instructions"] = skill["instructions"]
+    if skill["adaptive_memories"]:
+        payload["adaptive_memories"] = skill["adaptive_memories"]
     return payload
 
 
